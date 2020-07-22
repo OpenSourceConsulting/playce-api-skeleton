@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE included>
+<included>
+    <!-- Loggers -->
+    <logger name="org.springframework">
+        <level value="INFO" />
+    </logger>
+    <logger name="org.hibernate.SQL">
+        <level value="INFO" />
+    </logger>
+    <logger name="org.hibernate.type">
+        <level value="INFO" />
+    </logger>
+    <logger name="com.playce">
+        <level value="DEBUG" />
+    </logger>
+
+    <root>
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+</included>
