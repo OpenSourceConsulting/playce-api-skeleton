@@ -135,7 +135,7 @@ public class SwaggerConfig {
 		String token = "{TOKEN}";
 
 		if ("local".equals(activeProfile)) {
-			token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOlt7ImF1dGhvcml0eSI6IkZVTExfQURNSU4ifV0sImNyZWF0ZWQiOjE1NDc1MTA5MjQ3MjksImV4cCI6MTYzMzkxMDkyNH0.2J-XdKQ30KcOkrG8zYHOjivCVPGGPGIHNaePklwCYv_4EnC1nWMzWULq6Y7pr7nO2kjBDM59FAhGJhtKWY3UgA";
+			token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOlt7ImF1dGhvcml0eSI6IkFkbWluaXN0cmF0b3IifV0sImNyZWF0ZWQiOjE1OTU0NjQ2NzA2NTEsImV4cCI6MTU5NTk4MzA3MH0.r0c-7UQNegpnRasRPcfwEGIs-4vRKSLQgGlDMYaMSjzg2jyXkA921lMOZOqVzis69Poj2ZeXPgxLxi9rxl2wfg";
 		}
 
 		List<Parameter> parameters = new ArrayList<Parameter>();

@@ -217,3 +217,37 @@ ENGINE = InnoDB;
 -- SET SQL_MODE=@OLD_SQL_MODE;
 -- SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 -- SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Table `history`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `history` CASCADE ;
+
+CREATE TABLE IF NOT EXISTS `history` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `process_uuid` VARCHAR(255) NOT NULL,
+  `code` INT NOT NULL COMMENT 'Cluster 생성, Domain 생성, Host 생성, WAS 생성, WEB 생성, Session Server 생성\nenv.sh 수정, server.xml 수정, context.xml 수정, config 수정 \n등을 코드화',
+  `title` VARCHAR(255) NOT NULL,
+  `wizard_id` BIGINT NULL,
+  `cluster_id` BIGINT NULL,
+  `domain_id` BIGINT NULL,
+  `host_id` BIGINT NULL,
+  `engine_id` BIGINT NULL,
+  `web_app_server_id` BIGINT NULL,
+  `web_server_id` BIGINT NULL,
+  `session_server_id` BIGINT NULL,
+  `scouter_server_id` BIGINT NULL,
+  `atlassian_server_id` BIGINT NULL,
+  `datasource_id` BIGINT NULL,
+  `application_id` BIGINT NULL,
+  `access_control_id` BIGINT NULL,
+  `config_file` VARCHAR(255) NULL,
+  `status_code` VARCHAR(255) NOT NULL,
+  `message` LONGTEXT NULL,
+  `task_user` BIGINT NULL,
+  `read_yn` VARCHAR(1) NOT NULL DEFAULT 'N',
+  `delete_yn` VARCHAR(1) NOT NULL DEFAULT 'N',
+  `create_date` DATETIME NULL DEFAULT current_timestamp,
+  `end_date` DATETIME NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;

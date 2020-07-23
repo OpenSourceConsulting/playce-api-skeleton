@@ -224,3 +224,39 @@ CREATE INDEX members_roles_domains_member_id_index ON members_roles_domains (mem
 CREATE INDEX members_roles_domains_role_id_index ON members_roles_domains (role_id ASC);
 
 ALTER SEQUENCE members_roles_domains_id_seq RENAME TO members_roles_domains_generator;
+
+-- -----------------------------------------------------
+-- Table history
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS history CASCADE ;
+
+CREATE TABLE IF NOT EXISTS history (
+    id BIGSERIAL NOT NULL,
+    process_uuid VARCHAR(255) NOT NULL,
+    code INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    wizard_id BIGINT NULL,
+    cluster_id BIGINT NULL,
+    domain_id BIGINT NULL,
+    host_id BIGINT NULL,
+    engine_id BIGINT NULL,
+    web_app_server_id BIGINT NULL,
+    web_server_id BIGINT NULL,
+    session_server_id BIGINT NULL,
+    scouter_server_id BIGINT NULL,
+    atlassian_server_id BIGINT NULL,
+    datasource_id BIGINT NULL,
+    application_id BIGINT NULL,
+    access_control_id BIGINT NULL,
+    config_file VARCHAR(255) NULL,
+    status_code VARCHAR(255) NOT NULL,
+    message TEXT NULL,
+    task_user BIGINT NULL,
+    read_yn VARCHAR(1) NOT NULL DEFAULT 'N',
+    delete_yn VARCHAR(1) NOT NULL DEFAULT 'N',
+    create_date TIMESTAMP NULL DEFAULT current_timestamp,
+    end_date TIMESTAMP NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER SEQUENCE history_id_seq RENAME TO history_generator;
