@@ -25,5 +25,6 @@ public interface HostService {
 
     Host getHost(Long hostId) throws PlayceException;
 
+    History createHost(Host host, MultipartFile keyFile) throws PlayceException;
 }
 //end of HostService.java

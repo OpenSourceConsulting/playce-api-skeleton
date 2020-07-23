@@ -133,5 +133,93 @@ public class HostController {
 
         return message;
     }
+
+    /**
+     * Create host.
+     *
+     * @param message the message
+     * @param host    the host
+     * @param keyFile the key file
+     * @return the wasup message
+     */
+    @ApiOperation(value = "호스트 신규 등록", notes = "호스트를 신규 등록한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "ipAddress", value = "Host IP Address", required = true, dataType = "string", paramType = "formData"),
+            @ApiImplicitParam(name = "port", value = "SSH Port", required = true, dataType = "int", paramType = "formData"),
+            @ApiImplicitParam(name = "username", value = "Username", required = true, dataType = "string", paramType = "formData"),
+            @ApiImplicitParam(name = "password", value = "Password", required = false, dataType = "string", paramType = "formData"),
+            @ApiImplicitParam(name = "sudoerYn", value = "Sudo Enabled", required = false, dataType = "string", paramType = "formData"),
+            //@ApiImplicitParam(name = "keyFile", value = "Select the file to Upload", required = false, dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "name", value = "Host Name", required = true, dataType = "string", paramType = "formData"),
+            @ApiImplicitParam(name = "agentInstallPath", value = "Agent Install Path", required = false, dataType = "string", paramType = "formData"),
+            @ApiImplicitParam(name = "description", value = "Description", required = false, dataType = "string", paramType = "formData")
+    })
+    @RequestMapping(value = "/host", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PlayceMessage createHost(@ApiIgnore PlayceMessage message, @ApiIgnore Host host,
+                                   @ApiParam(name = "keyFile", value = "Select the file to Upload", required = false)
+                                   @RequestPart(value = "keyFile", required = false) MultipartFile keyFile) {
+        try {
+            // admin 권한 체크
+            if (!WebUtil.hasRole(1L)) {
+                message.setCode(403);
+                throw new NoPermissionException("You don’t have permission to create host.");
+            }
+
+            if (StringUtils.isNotEmpty(host.getPassword())) {
+                host.setPassword(host.getPassword());
+            }
+
+            host.setCreateUser(WebUtil.getId());
+            host.setUpdateUser(WebUtil.getId());
+            /*
+            if ("Y".equals(hostAlarm.getCpuAlarmYn()) || "Y".equals(hostAlarm.getMemAlarmYn()) || "Y".equals(hostAlarm.getDiskAlarmYn())) {
+                host.setMonitoringYn("Y");
+            } else {
+                host.setMonitoringYn("N");
+            }
+            /*/
+            host.setMonitoringYn("Y");
+            //*/
+            /*host.setAlarm(hostAlarm);
+            hostAlarm.setHost(host);
+
+            ScouterServer scouterServer = null;
+            if (scouterServerId != null) {
+                scouterServer = scouterServerService.getScouterServer(scouterServerId);
+
+                if (scouterServer == null) {
+                    throw new WasupException("ScouterServer does not exists.");
+                }
+
+                host.setScouterServer(scouterServer);
+            }*/
+
+            // get host detail
+            History history = hostService.createHost(host, keyFile);
+
+            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
+                history = historyResultHelper.getHistoryResult(history.getId());
+            }
+
+            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
+                throw new PlayceException(history.getMessage());
+            }
+
+            // agent install
+            //hostService.agentInstall(host, false);
+
+            // Sleep while websocket connected from agent.
+            Thread.sleep(1000);
+
+            message.setStatus(Status.success);
+            message.setData(history);
+        } catch (Exception e) {
+            logger.error("Unhandled exception occurred while insert host.", e);
+            message.setStatus(Status.fail);
+            message.setMessage("Can NOT insert host or start agent. [Reason] : " + e.getMessage());
+        }
+
+        return message;
+    }
 }
 //end of HostController.java

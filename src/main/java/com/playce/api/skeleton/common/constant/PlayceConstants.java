@@ -26,6 +26,9 @@ public class PlayceConstants {
     public static final int HISTORY_CODE_DOMAIN_DELETE              = 324;    // Domain delete
     public static final int HISTORY_CODE_DOMAIN_UPDATE              = 325;    // Domain update
 
+    // Host
+    public static final int HISTORY_CODE_HOST_CREATE                = 390;    // Host create
+
     // History Status Type
     public static final String HISTORY_STATUS_SUCCESS           = "Success";
     public static final String HISTORY_STATUS_RUNNING           = "Running";
