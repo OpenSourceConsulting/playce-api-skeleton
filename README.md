@@ -55,4 +55,5 @@ spring.jpa.hibernate.ddl-auto=true // 초기 테이블 생성 유무
 |Method|URL|설명|
 |------|----|---|
 |**[GET]**|*/api/servers/host*|호스트 목록 조회
+|**[POST]**|*/api/servers/host*|호스트 생성
 |**[GET]**|*/api/servers/host/{id}*|호스트 상세정보 조회
