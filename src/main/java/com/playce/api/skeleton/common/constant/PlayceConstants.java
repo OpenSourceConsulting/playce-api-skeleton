@@ -1,3 +1,24 @@
+/*
+ * Copyright 2020 The Playce Project.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Revision History
+ * Author			Date				Description
+ * ---------------	----------------	------------
+ * SangCheon Park	Jul 22, 2020	    First Draft.
+ */
 package com.playce.api.skeleton.common.constant;
 
 /**
@@ -5,7 +26,7 @@ package com.playce.api.skeleton.common.constant;
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 public class PlayceConstants {
@@ -15,24 +36,6 @@ public class PlayceConstants {
      */
     private PlayceConstants() {
     }
-
-    // Session Cluster
-    public static final int HISTORY_CODE_CLUSTER_CREATE             = 262;    // Cluster create
-    public static final int HISTORY_CODE_CLUSTER_DELETE             = 263;    // Cluster delete
-    public static final int HISTORY_CODE_CLUSTER_UPDATE             = 264;    // Cluster update
-
-    // Domain
-    public static final int HISTORY_CODE_DOMAIN_CREATE              = 323;    // Domain create
-    public static final int HISTORY_CODE_DOMAIN_DELETE              = 324;    // Domain delete
-    public static final int HISTORY_CODE_DOMAIN_UPDATE              = 325;    // Domain update
-
-    // Host
-    public static final int HISTORY_CODE_HOST_CREATE                = 390;    // Host create
-
-    // History Status Type
-    public static final String HISTORY_STATUS_SUCCESS           = "Success";
-    public static final String HISTORY_STATUS_RUNNING           = "Running";
-    public static final String HISTORY_STATUS_FAILED            = "Failed";
 
     // Monitoring Time Type
     public static final String MONITOR_TIME_FIVE_MINUTE         = "5M";

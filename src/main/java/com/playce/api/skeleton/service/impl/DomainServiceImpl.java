@@ -1,3 +1,24 @@
+/*
+ * Copyright 2020 The Playce Project.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Revision History
+ * Author			Date				Description
+ * ---------------	----------------	------------
+ * SangCheon Park	Jul 22, 2020	    First Draft.
+ */
 package com.playce.api.skeleton.service.impl;
 
 import com.playce.api.skeleton.common.util.WebUtil;
@@ -5,7 +26,6 @@ import com.playce.api.skeleton.exception.NoPermissionException;
 import com.playce.api.skeleton.exception.PlayceException;
 import com.playce.api.skeleton.model.*;
 import com.playce.api.skeleton.repository.DomainRepository;
-import com.playce.api.skeleton.repository.HistoryRepository;
 import com.playce.api.skeleton.repository.MemberRepository;
 import com.playce.api.skeleton.repository.MembersRolesDomainsRepository;
 import com.playce.api.skeleton.service.DomainService;
@@ -17,16 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
-import static com.playce.api.skeleton.common.constant.PlayceConstants.*;
 
 /**
  * <pre>
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 @Service
@@ -44,9 +61,6 @@ public class DomainServiceImpl implements DomainService {
     @Autowired
     private MembersRolesDomainsRepository membersRolesDomainsRepository;
 
-    @Autowired
-    private HistoryRepository historyRepository;
-
     @Override
     public List<Domain> getDomainList() {
         if (WebUtil.hasRole(1L)) {
@@ -57,7 +71,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public Domain getDomain(Long id, boolean writable) throws PlayceException {
+    public Domain getDomain(Long id, boolean writable) throws NoPermissionException {
         Domain domain = domainRepository.findById(id).orElse(null);
 
         if (domain != null) {
@@ -76,33 +90,11 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public History createDomain(Domain domain) {
-        String uuid = UUID.randomUUID().toString();
-        History history = new History();
+    public Domain createDomain(Domain domain) {
+        // create Domain
+        domain = domainRepository.save(domain);
 
-        try {
-            // create Domain
-            domain = domainRepository.save(domain);
-
-            // save History
-            history.setProcessUUID(uuid);
-            history.setCode(HISTORY_CODE_DOMAIN_CREATE);
-            history.setTitle("Domain(" + domain.getName() + ") has been created.");
-            history.setDomainId(domain.getId());
-            history.setTaskUser(WebUtil.getId());
-            history.setStatusCode(HISTORY_STATUS_SUCCESS);
-            history.setCreateDate(new Date());
-        } catch (Exception e) {
-            logger.error("Unhandled exception occurred while create domain.", e);
-            history.setStatusCode(HISTORY_STATUS_FAILED);
-            history.setMessage(e.getMessage());
-        } finally {
-            history.setReadYn("Y");
-            history.setEndDate(new Date());
-            history = historyRepository.save(history);
-        }
-
-        return history;
+        return domain;
     }
 
     @Override
@@ -111,9 +103,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public History modifyDomain(Domain domain, Long afterClusterId) throws PlayceException {
-        String uuid = UUID.randomUUID().toString();
-
+    public Domain modifyDomain(Domain domain, Long afterClusterId) throws PlayceException {
         Domain originDomain = domainRepository.findById(domain.getId()).orElse(null);
         if (originDomain == null) {
             throw new PlayceException("Domain does not exists.");
@@ -124,49 +114,14 @@ public class DomainServiceImpl implements DomainService {
             throw new PlayceException("Can NOT update Default domain.");
         }
 
-        History history = new History();
-        history.setProcessUUID(uuid);
-        history.setCode(HISTORY_CODE_DOMAIN_UPDATE);
-        history.setTitle("Domain(" + originDomain.getName() + ") has been updated.");
-        history.setDomainId(originDomain.getId());
-        history.setTaskUser(WebUtil.getId());
+        // update domain
+        originDomain.setName(domain.getName());
+        originDomain.setDescription(domain.getDescription());
+        originDomain.setCluster(new Cluster(afterClusterId));
+        originDomain.setUpdateUser(domain.getUpdateUser());
+        originDomain.setUpdateDate(new Date());
 
-        try {
-            // Cluster의 변경이 이루어질 경우 Domain에 속한 Web App Server의 dolly.properties 변경
-//            Long beforeClusterId = originDomain.getCluster().getId();
-//            if (beforeClusterId.longValue() != afterClusterId.longValue()) {
-//                for (WebAppServer webAppServer : originDomain.getWebAppServer()) {
-//                    String beforeClusterServerList = clusterService.getHotrodServerList(beforeClusterId);
-//                    String afterClusterServerList = clusterService.getHotrodServerList(afterClusterId);
-//
-//                    if (StringUtils.compare(beforeClusterServerList, afterClusterServerList) != 0) {
-//                         SessionClusteringTask 실행
-//                        threadPoolExecutor.execute(new SessionClusteringTask(WebUtil.getId(), webAppServer, null, afterClusterServerList, uuid));
-//                    }
-//                }
-//            }
-
-            // update domain
-            originDomain.setName(domain.getName());
-            originDomain.setDescription(domain.getDescription());
-            originDomain.setCluster(new Cluster(afterClusterId));
-            originDomain.setUpdateUser(domain.getUpdateUser());
-            originDomain.setUpdateDate(new Date());
-
-            // save History
-            history.setStatusCode(HISTORY_STATUS_SUCCESS);
-            history.setCreateDate(new Date());
-        } catch (Exception e) {
-            logger.error("Unhandled exception occurred while update domain.", e);
-            history.setStatusCode(HISTORY_STATUS_FAILED);
-            history.setMessage(e.getMessage());
-        } finally {
-            history.setReadYn("Y");
-            history.setEndDate(new Date());
-            history = historyRepository.save(history);
-        }
-
-        return history;
+        return originDomain;
     }
 
     @Override
@@ -205,9 +160,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public History removeDomain(Domain domain) throws PlayceException {
-        String uuid = UUID.randomUUID().toString();
-
+    public void removeDomain(Domain domain) throws PlayceException {
         Domain d = domainRepository.findById(domain.getId()).orElse(null);
         if (d == null) {
             throw new PlayceException("Domain does not exists.");
@@ -218,45 +171,10 @@ public class DomainServiceImpl implements DomainService {
             throw new PlayceException("Can NOT delete Default domain.");
         }
 
-        // get application servers & web servers
-//        List<WebAppServer> webAppServers = appServerRepository.findByDomainId(d.getId());
-//        List<WebServer> webServers = webServerRepository.findByDomainId(d.getId());
-//
-//        if (webAppServers.size() > 0) {
-//            throw new WasupException("This domain still has web application servers.");
-//        }
-//
-//        if (webServers.size() > 0) {
-//            throw new WasupException("This domain still has web servers.");
-//        }
-
-        History history = new History();
-
-        try {
-            // save History
-            history.setProcessUUID(uuid);
-            history.setCode(HISTORY_CODE_DOMAIN_DELETE);
-            history.setTitle("Domain(" + d.getName() + ") has been deleted.");
-            history.setDomainId(d.getId());
-            history.setTaskUser(WebUtil.getId());
-            history.setStatusCode(HISTORY_STATUS_SUCCESS);
-            history.setCreateDate(new Date());
-
-            // delelte domain
-            d.setDeleteYn(domain.getDeleteYn());
-            d.setUpdateUser(domain.getUpdateUser());
-            d.setUpdateDate(new Date());
-        } catch (Exception e) {
-            logger.error("Unhandled exception occurred while delete domain.", e);
-            history.setStatusCode(HISTORY_STATUS_FAILED);
-            history.setMessage(e.getMessage());
-        } finally {
-            history.setReadYn("Y");
-            history.setEndDate(new Date());
-            history = historyRepository.save(history);
-        }
-
-        return history;
+        // delelte domain
+        d.setDeleteYn(domain.getDeleteYn());
+        d.setUpdateUser(domain.getUpdateUser());
+        d.setUpdateDate(new Date());
     }
 }
 //end of DomainServiceImpl.java

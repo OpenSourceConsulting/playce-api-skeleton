@@ -1,3 +1,24 @@
+/*
+ * Copyright 2020 The Playce Project.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Revision History
+ * Author			Date				Description
+ * ---------------	----------------	------------
+ * SangCheon Park	Jul 22, 2020	    First Draft.
+ */
 package com.playce.api.skeleton.controller;
 
 import com.playce.api.skeleton.dto.PlayceMessage;
@@ -23,7 +44,7 @@ import java.util.Map;
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 @RestController
@@ -49,9 +70,9 @@ public class MonitoringController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "hostIds", value = "Host ID", required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "timeRange", value = "Time Range", required = false, dataType = "string", paramType = "query", defaultValue = "3H"),
-            @ApiImplicitParam(name = "searchStartTime", value = "Search Start Time", required = false, dataType = "long", paramType = "query"),
-            @ApiImplicitParam(name = "searchEndTime", value = "Search End Time", required = false, dataType = "long", paramType = "query"),
-            @ApiImplicitParam(name = "searchPeriod", value = "Search Period", required = false, dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "searchStartTime", value = "Search Start Time", required = false, dataType = "long", paramType = "query", defaultValue = "1592633100000"),
+            @ApiImplicitParam(name = "searchEndTime", value = "Search End Time", required = false, dataType = "long", paramType = "query", defaultValue = "1592634600000"),
+            @ApiImplicitParam(name = "searchPeriod", value = "Search Period(5M / 10M / 20M)", required = false, dataType = "string", paramType = "query", defaultValue = "5M")
     })
     @RequestMapping(value = "/host", method = RequestMethod.GET)
     public PlayceMessage getHostMonitorList(@ApiIgnore PlayceMessage message,
@@ -62,10 +83,6 @@ public class MonitoringController {
                                             @RequestParam(required = false) String searchPeriod) {
         try {
             long currentTimeMillis = System.currentTimeMillis();
-
-//            if (timeRange == null) {
-//                throw new WasupException("Time range must not be null.");
-//            }
 
             // get Host monitor data
             Map<String, Object> hostMonitors = monitoringService

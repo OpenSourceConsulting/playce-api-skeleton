@@ -39,6 +39,14 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+/**
+ * <pre>
+ *
+ * </pre>
+ *
+ * @author SangCheon Park
+ * @version 1.0
+ */
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "com.playce.api.skeleton")

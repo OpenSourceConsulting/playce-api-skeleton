@@ -1,3 +1,24 @@
+/*
+ * Copyright 2020 The Playce Project.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Revision History
+ * Author			Date				Description
+ * ---------------	----------------	------------
+ * SangCheon Park	Jul 22, 2020	    First Draft.
+ */
 package com.playce.api.skeleton.service.impl;
 
 import com.playce.api.skeleton.exception.NoPermissionException;
@@ -22,7 +43,7 @@ import static com.playce.api.skeleton.common.constant.PlayceConstants.*;
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 @Service
@@ -185,10 +206,10 @@ public class MonitoringServiceImpl implements MonitoringService {
             List<Host> hostList = hostRepository.findAll();
             List<Long> hostIdList = hostList.stream().map(Host::getId).collect(Collectors.toList());
 
-            //hostMonitorList = hostMonitorRepository
-            //        .findByMonitorDateGreaterThanEqualAndMonitorDateLessThanEqualAndTypeAndHostIdInOrderByMonitorDateAsc(beforeDate, currentDate, type, hostIdList);
+            hostMonitorList = hostMonitorRepository
+                    .findByMonitorDateGreaterThanEqualAndMonitorDateLessThanEqualAndTypeAndHostIdInOrderByMonitorDateAsc(beforeDate, currentDate, type, hostIdList);
 
-            hostMonitorList = new ArrayList<HostMonitor>();
+            //hostMonitorList = new ArrayList<HostMonitor>();
 
             long beforeTimestamp = beforeDate.getTime();
             long currentTimestamp = currentDate.getTime();

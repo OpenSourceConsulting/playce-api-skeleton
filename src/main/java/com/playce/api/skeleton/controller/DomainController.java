@@ -1,6 +1,26 @@
+/*
+ * Copyright 2020 The Playce Project.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Revision History
+ * Author			Date				Description
+ * ---------------	----------------	------------
+ * SangCheon Park	Jul 22, 2020	    First Draft.
+ */
 package com.playce.api.skeleton.controller;
 
-import com.playce.api.skeleton.common.helper.HistoryResultHelper;
 import com.playce.api.skeleton.common.util.WebUtil;
 import com.playce.api.skeleton.dto.PlayceMessage;
 import com.playce.api.skeleton.dto.Status;
@@ -8,7 +28,6 @@ import com.playce.api.skeleton.exception.NoPermissionException;
 import com.playce.api.skeleton.exception.PlayceException;
 import com.playce.api.skeleton.model.Cluster;
 import com.playce.api.skeleton.model.Domain;
-import com.playce.api.skeleton.model.History;
 import com.playce.api.skeleton.service.DomainService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -28,15 +47,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.playce.api.skeleton.common.constant.PlayceConstants.HISTORY_STATUS_FAILED;
-import static com.playce.api.skeleton.common.constant.PlayceConstants.HISTORY_STATUS_RUNNING;
-
 /**
  * <pre>
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 @RestController
@@ -51,9 +67,6 @@ public class DomainController {
 
     @Autowired
     private LocaleResolver localeResolver;
-
-    @Autowired
-    private HistoryResultHelper historyResultHelper;
 
     /**
      * <pre>
@@ -166,18 +179,10 @@ public class DomainController {
             domain.setUpdateUser(WebUtil.getId());
 
             /// create domain
-            History history = domainService.createDomain(domain);
+            domain = domainService.createDomain(domain);
 
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            } else {
-                message.setStatus(Status.success);
-                message.setData(history);
-            }
+            message.setStatus(Status.success);
+            message.setData(domain);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while create doamin.", e);
             message.setStatus(Status.fail);
@@ -220,18 +225,10 @@ public class DomainController {
             }
 
             // update domain
-            History history = domainService.modifyDomain(domain, clusterId);
+            domain = domainService.modifyDomain(domain, clusterId);
 
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            } else {
-                message.setStatus(Status.success);
-                message.setData(history);
-            }
+            message.setStatus(Status.success);
+            message.setData(domain);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while update domain.", e);
             message.setStatus(Status.fail);
@@ -278,18 +275,9 @@ public class DomainController {
             domainService.updateMemberRolesDomainsByDomainId(domain);
 
             // 도메인 삭제 - 도메인의 delete_yn을 "Y"로 변경한다.
-            History history = domainService.removeDomain(domain);
+            domainService.removeDomain(domain);
 
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            } else {
-                message.setStatus(Status.success);
-                message.setData(history);
-            }
+            message.setStatus(Status.success);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while delete domain.", e);
             message.setStatus(Status.fail);

@@ -39,18 +39,18 @@ import java.util.List;
 @Repository
 public interface DomainRepository extends JpaRepository<Domain, Long> {
 
-    List<Domain> findByName(String name);
+    public List<Domain> findByName(String name);
 
-    List<Domain> findByClusterId(Long id);
+    public List<Domain> findByClusterId(Long id);
 
-    List<Domain> findByIdIn(List<Long> idList);
+    public List<Domain> findByIdIn(List<Long> idList);
 
-    List<Domain> findAllByOrderByIdDesc();
+    public List<Domain> findAllByOrderByIdDesc();
 
-    List<Domain> findByIdInOrderByIdDesc(List<Long> domaindIdList);
+    public List<Domain> findByIdInOrderByIdDesc(List<Long> domaindIdList);
 
-    List<Domain> findAllByOrderByNameAsc();
+    public List<Domain> findAllByOrderByNameAsc();
 
-    List<Domain> findByIdInOrderByNameAsc(List<Long> domaindIdList);
+    public List<Domain> findByIdInOrderByNameAsc(List<Long> domaindIdList);
 }
 //end of DomainRepository.java

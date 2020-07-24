@@ -16,17 +16,15 @@
  * Revision History
  * Author            Date                Description
  * ---------------  ----------------    ------------
- * Jaeeon Bae       7월 23, 2020            First Draft.
+ * SangCheon Park       7월 23, 2020            First Draft.
  */
 package com.playce.api.skeleton.controller;
 
-import com.playce.api.skeleton.common.helper.HistoryResultHelper;
 import com.playce.api.skeleton.common.util.WebUtil;
 import com.playce.api.skeleton.dto.PlayceMessage;
 import com.playce.api.skeleton.dto.Status;
 import com.playce.api.skeleton.exception.NoPermissionException;
 import com.playce.api.skeleton.exception.PlayceException;
-import com.playce.api.skeleton.model.History;
 import com.playce.api.skeleton.model.Host;
 import com.playce.api.skeleton.service.HostService;
 import io.swagger.annotations.*;
@@ -43,15 +41,12 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
-import static com.playce.api.skeleton.common.constant.PlayceConstants.HISTORY_STATUS_FAILED;
-import static com.playce.api.skeleton.common.constant.PlayceConstants.HISTORY_STATUS_RUNNING;
-
 /**
  * <pre>
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 @RestController
@@ -63,9 +58,6 @@ public class HostController {
 
     @Autowired
     private HostService hostService;
-
-    @Autowired
-    private HistoryResultHelper historyResultHelper;
 
     /**
      * Gets host list.
@@ -171,48 +163,13 @@ public class HostController {
 
             host.setCreateUser(WebUtil.getId());
             host.setUpdateUser(WebUtil.getId());
-            /*
-            if ("Y".equals(hostAlarm.getCpuAlarmYn()) || "Y".equals(hostAlarm.getMemAlarmYn()) || "Y".equals(hostAlarm.getDiskAlarmYn())) {
-                host.setMonitoringYn("Y");
-            } else {
-                host.setMonitoringYn("N");
-            }
-            /*/
             host.setMonitoringYn("Y");
-            //*/
-            /*host.setAlarm(hostAlarm);
-            hostAlarm.setHost(host);
-
-            ScouterServer scouterServer = null;
-            if (scouterServerId != null) {
-                scouterServer = scouterServerService.getScouterServer(scouterServerId);
-
-                if (scouterServer == null) {
-                    throw new WasupException("ScouterServer does not exists.");
-                }
-
-                host.setScouterServer(scouterServer);
-            }*/
 
             // get host detail
-            History history = hostService.createHost(host, keyFile);
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            }
-
-            // agent install
-            //hostService.agentInstall(host, false);
-
-            // Sleep while websocket connected from agent.
-            Thread.sleep(1000);
+            host = hostService.createHost(host, keyFile);
 
             message.setStatus(Status.success);
-            message.setData(history);
+            message.setData(host);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while insert host.", e);
             message.setStatus(Status.fail);

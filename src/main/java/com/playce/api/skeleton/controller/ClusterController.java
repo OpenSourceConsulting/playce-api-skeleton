@@ -1,13 +1,32 @@
+/*
+ * Copyright 2020 The Playce Project.
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Revision History
+ * Author			Date				Description
+ * ---------------	----------------	------------
+ * SangCheon Park	Jul 22, 2020	    First Draft.
+ */
 package com.playce.api.skeleton.controller;
 
-import com.playce.api.skeleton.common.helper.HistoryResultHelper;
 import com.playce.api.skeleton.common.util.WebUtil;
 import com.playce.api.skeleton.dto.PlayceMessage;
 import com.playce.api.skeleton.dto.Status;
 import com.playce.api.skeleton.exception.NoPermissionException;
 import com.playce.api.skeleton.exception.PlayceException;
 import com.playce.api.skeleton.model.Cluster;
-import com.playce.api.skeleton.model.History;
 import com.playce.api.skeleton.service.ClusterService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,15 +46,12 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.Date;
 import java.util.List;
 
-import static com.playce.api.skeleton.common.constant.PlayceConstants.HISTORY_STATUS_FAILED;
-import static com.playce.api.skeleton.common.constant.PlayceConstants.HISTORY_STATUS_RUNNING;
-
 /**
  * <pre>
  *
  * </pre>
  *
- * @author Jaeeon Bae
+ * @author SangCheon Park
  * @version 1.0
  */
 @RestController
@@ -47,9 +63,6 @@ public class ClusterController {
 
     @Autowired
     private ClusterService clusterService;
-
-    @Autowired
-    private HistoryResultHelper historyResultHelper;
 
     /**
      * <pre>
@@ -139,18 +152,10 @@ public class ClusterController {
             cluster.setUpdateDate(new Date());
 
             // create cluster
-            History history = clusterService.createCluster(cluster);
+            cluster = clusterService.createCluster(cluster);
 
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            } else {
-                message.setStatus(Status.success);
-                message.setData(history);
-            }
+            message.setStatus(Status.success);
+            message.setData(cluster);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while create cluster.", e);
             message.setStatus(Status.fail);
@@ -197,18 +202,10 @@ public class ClusterController {
             }
 
             // update cluster
-            History history = clusterService.modifyCluster(originCluster, newCluster);
+            originCluster = clusterService.modifyCluster(originCluster, newCluster);
 
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            } else {
-                message.setStatus(Status.success);
-                message.setData(history);
-            }
+            message.setStatus(Status.success);
+            message.setData(originCluster);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while update cluster.", e);
             message.setStatus(Status.fail);
@@ -257,23 +254,10 @@ public class ClusterController {
                 throw new PlayceException("This Cluster(" + cluster.getName() + ") still has domain(s).");
             }
 
-//            if (cluster.getSessionServers().size() > 0) {
-//                throw new PlayceException("This Cluser(" + cluster.getName() + ") still has session server(s).");
-//            }
-
             // delete cluster
-            History history = clusterService.removeCluster(cluster);
+            clusterService.removeCluster(cluster);
 
-            if (history.getStatusCode().equals(HISTORY_STATUS_RUNNING)) {
-                history = historyResultHelper.getHistoryResult(history.getId());
-            }
-
-            if (history.getStatusCode().equals(HISTORY_STATUS_FAILED)) {
-                throw new PlayceException(history.getMessage());
-            } else {
-                message.setStatus(Status.success);
-                message.setData(history);
-            }
+            message.setStatus(Status.success);
         } catch (Exception e) {
             logger.error("Unhandled exception occurred while delete cluster.", e);
             message.setStatus(Status.fail);
